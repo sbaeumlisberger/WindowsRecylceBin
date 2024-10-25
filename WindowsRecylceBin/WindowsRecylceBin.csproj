@@ -19,6 +19,7 @@
 		<Version>1.0.0</Version>
 		<Description>.NET API to access the Windows recycle bin and restore files from it.</Description>
 		<PackageTags>Recycle Bin, Windows, Restore</PackageTags>
+		<Authors>sbaeumlisberger</Authors>
 
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/sbaeumlisberger/WindowsRecylceBin</RepositoryUrl>
