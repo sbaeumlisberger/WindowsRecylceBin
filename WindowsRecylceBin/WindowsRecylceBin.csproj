@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0-windows;net48</TargetFrameworks>
+		<LangVersion>12</LangVersion>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(TargetFramework)' == 'net8.0-windows' ">
+		<IsAotCompatible>True</IsAotCompatible>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="/" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<PackageId>WindowsRecylceBin</PackageId>
+		<Version>1.0.0</Version>
+		<Description>.NET API to access the Windows recycle bin and restore files from it.</Description>
+		<PackageTags>Recycle Bin, Windows, Restore</PackageTags>
+
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/sbaeumlisberger/WindowsRecylceBin</RepositoryUrl>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<PackageProjectUrl>https://github.com/sbaeumlisberger/WindowsRecylceBin</PackageProjectUrl>
+
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<EmbedAllSources>true</EmbedAllSources>
+
+		<Deterministic>true</Deterministic>
+	</PropertyGroup>
+
+</Project>

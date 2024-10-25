@@ -1,0 +1,1 @@
+﻿.NET API to access the Windows recycle bin and restore files from it.
