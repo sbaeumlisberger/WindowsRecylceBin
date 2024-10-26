@@ -1,4 +1,6 @@
-.NET API to access the Windows recycle bin and restore files from it.
+.NET API to access the Windows recycle bin and restore files from it.  
+
+Supports Windows Vista, 7, 8, 10 and 11.  
 
 https://www.nuget.org/packages/WindowsRecylceBin
 

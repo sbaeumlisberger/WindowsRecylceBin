@@ -20,7 +20,7 @@ public class RecycleBin : IRecycleBin
 
         if (!Directory.Exists(recycleBinPath))
         {
-            throw new Exception($"""Recycle bin for SID "{sid}" does not exist.""");
+            throw new IOException($"""Recycle bin for SID "{sid}" does not exist.""");
         }
     }
 
@@ -49,15 +49,15 @@ public class RecycleBin : IRecycleBin
     {
         ValidateRecycleBinEntryParam(nameof(entry), entry);
         MoveFileOrDirectory(entry.BackupFilePath, entry.OriginalFilePath);
-        DeleteFileOrDirectory(entry.MetadataFilePath);
+        File.Delete(entry.MetadataFilePath);
     }
 
-    public void Restore(string filePath)
+    public void Restore(string orginalFilePath)
     {
         var entry = GetEntries()
-            .Where(entry => entry.OriginalFilePath == filePath)
+            .Where(entry => entry.OriginalFilePath == orginalFilePath)
             .OrderByDescending(entry => entry.DeletedAt)
-            .FirstOrDefault() ?? throw new Exception($"""Could not find recycle bin entry for "{filePath}".""");
+            .FirstOrDefault() ?? throw new IOException($"""Could not find recycle bin entry for "{orginalFilePath}".""");
 
         Restore(entry);
     }
@@ -66,7 +66,7 @@ public class RecycleBin : IRecycleBin
     {
         ValidateRecycleBinEntryParam(nameof(entry), entry);
         DeleteFileOrDirectory(entry.BackupFilePath);
-        DeleteFileOrDirectory(entry.MetadataFilePath);
+        File.Delete(entry.MetadataFilePath);
     }
 
     public void Empty()
@@ -79,12 +79,54 @@ public class RecycleBin : IRecycleBin
 
     private RecycleBinEntry ParseMetadataFile(string metadataFilePath)
     {
+        /*
+         * Metadata file structure:
+         * 
+         * Windows Vista, 7 and 8:
+         * 
+         * Offset  Size  Description
+         *  0        8   Header
+         *  8        8   File size
+         * 16        8   Deleted at (FILETIME)
+         * 24      520   Original file path (UTF-16, null-terminated)
+         * 
+         * Windows 10 and 11:
+         * 
+         * Offset  Size  Description
+         *  0        8   Header
+         *  8        8   File size
+         * 16        8   Deleted at (FILETIME)
+         * 24        4   File path length (in characters)
+         * 28      var   Original file path (UTF-16, null-terminated)
+         */
+
+        bool IsWindows10orLaterFormat(byte[] metadataBytes)
+        {
+            if (metadataBytes.Length != 544)
+            {
+                return true;
+            }
+
+            int filePathLengthInBytes = BitConverter.ToInt32(metadataBytes, 24) * 2;
+
+            return filePathLengthInBytes == 544 - 28;
+        }
+
         var metadataBytes = ReadFile(metadataFilePath);
 
         DateTime deletedAt = DateTime.FromFileTime(BitConverter.ToInt64(metadataBytes, 16));
 
-        int fileNameLength = BitConverter.ToInt32(metadataBytes, 24);
-        string orginalFilePath = Encoding.Unicode.GetString(metadataBytes, 28, fileNameLength * 2 - 2); // UTF-16 null-terminated
+        string orginalFilePath;
+
+        if (IsWindows10orLaterFormat(metadataBytes))
+        {
+            int numberOfBytesToDecode = BitConverter.ToInt32(metadataBytes, 24) * 2 - 2;
+            orginalFilePath = Encoding.Unicode.GetString(metadataBytes, 28, numberOfBytesToDecode);
+        }
+        else
+        {
+            orginalFilePath = Encoding.Unicode.GetString(metadataBytes, 24, metadataBytes.Length - 24).TrimEnd((char)0);
+        }
 
         string backupFileName = BackupFilePrefix + Path.GetFileName(metadataFilePath).Substring(MetadataFilePrefix.Length);
         string backupFilePath = Path.Combine(recycleBinPath, backupFileName);
@@ -103,9 +145,9 @@ public class RecycleBin : IRecycleBin
     private static byte[] ReadFile(string filePath)
     {
         using var fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        using var memoryStream = new MemoryStream();
-        fileStream.CopyTo(memoryStream);
-        return memoryStream.ToArray();
+        byte[] buffer = new byte[fileStream.Length];
+        fileStream.Read(buffer, 0, buffer.Length);
+        return buffer;
     }
 
     private static void DeleteFileOrDirectory(string path)
@@ -122,6 +164,11 @@ public class RecycleBin : IRecycleBin
 
     private static void MoveFileOrDirectory(string sourcePath, string destinationPath)
     {
+        if(Path.GetDirectoryName(destinationPath) is string parent)
+        {
+            Directory.CreateDirectory(parent);
+        }
+
         if (File.GetAttributes(sourcePath).HasFlag(FileAttributes.Directory))
         {
             Directory.Move(sourcePath, destinationPath);

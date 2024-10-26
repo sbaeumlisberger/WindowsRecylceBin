@@ -1,5 +1,7 @@
-﻿using Windows.Storage;
+﻿using System.Security.Principal;
+using Windows.Storage;
 using WindowsRecylceBin;
+using FileAttributes = System.IO.FileAttributes;
 
 namespace WindowsRecycleBin.Test;
 
@@ -12,9 +14,9 @@ public class RecycleBinTest
     {
         var testDirectoryPath = TestUtils.CreateTestFolder();
         string prefix = Guid.NewGuid().ToString();
-        await CreateAndDeleteFileAsync(testDirectoryPath, prefix);
-        await CreateAndDeleteFileAsync(testDirectoryPath, prefix);
-        await CreateAndDeleteFileAsync(testDirectoryPath, prefix);
+        await CreateAndMoveFileWithPrefixToRecycleBinAsync(testDirectoryPath, prefix);
+        await CreateAndMoveFileWithPrefixToRecycleBinAsync(testDirectoryPath, prefix);
+        await CreateAndMoveFileWithPrefixToRecycleBinAsync(testDirectoryPath, prefix);
 
         var recycleBinEntries = FilterByPrefix(recycleBin.GetEntries(), prefix);
 
@@ -26,11 +28,9 @@ public class RecycleBinTest
     {
         var testDirectoryPath = TestUtils.CreateTestFolder();
         string testFilePath = Path.Combine(testDirectoryPath, "test.txt");
-        File.WriteAllText(testFilePath, "test");
+        CreateFile(testFilePath, "test");
         var creationTime = File.GetCreationTime(testFilePath);
-        var storageFile = await StorageFile.GetFileFromPathAsync(testFilePath);
-        await storageFile.DeleteAsync();
-        Assert.False(File.Exists(testFilePath));
+        await MoveFileToRecycleBinAsync(testFilePath);
 
         recycleBin.Restore(testFilePath);
 
@@ -40,20 +40,60 @@ public class RecycleBinTest
     }
 
     [Fact]
-    public async Task Restore_FileWithAttribute()
+    public async Task Restore_HandlesSpecialCharsInPath()
     {
         var testDirectoryPath = TestUtils.CreateTestFolder();
-        string testFilePath = Path.Combine(testDirectoryPath, "test.txt");
-        File.WriteAllText(testFilePath, "test");
-        File.SetAttributes(testFilePath, System.IO.FileAttributes.Temporary);
-        var storageFile = await StorageFile.GetFileFromPathAsync(testFilePath);
-        await storageFile.DeleteAsync();
-        Assert.False(File.Exists(testFilePath));
+        string testFilePath = Path.Combine(testDirectoryPath, "§$%&()=`'_;üöä€ß.txt");
+        CreateFile(testFilePath, "test");
+        await MoveFileToRecycleBinAsync(testFilePath);
 
         recycleBin.Restore(testFilePath);
 
         Assert.True(File.Exists(testFilePath));
-        Assert.True(File.GetAttributes(testFilePath).HasFlag(System.IO.FileAttributes.Temporary));
+        Assert.Equal("test", File.ReadAllText(testFilePath));
+    }
+
+    [Fact]
+    public async Task Restore_ThrowsExceptionOnConflict()
+    {
+        var testDirectoryPath = TestUtils.CreateTestFolder();
+        string testFilePath = Path.Combine(testDirectoryPath, "test.txt");
+        CreateFile(testFilePath, "test");
+        await MoveFileToRecycleBinAsync(testFilePath);
+        File.WriteAllText(testFilePath, "conflict");
+
+        Assert.Throws<IOException>(() => recycleBin.Restore(testFilePath));
+    }
+
+    [Fact]
+    public async Task Restore_CreatesParentDirectory()
+    {
+        var testDirectoryPath = TestUtils.CreateTestFolder();
+        string parentDirectory = Path.Combine(testDirectoryPath, "ParentDirectory");
+        string testFilePath = Path.Combine(parentDirectory, "test.txt");
+        CreateFile(testFilePath, "test");
+        await MoveFileToRecycleBinAsync(testFilePath);
+        Directory.Delete(parentDirectory);
+
+        recycleBin.Restore(testFilePath);
+
+        Assert.True(Directory.Exists(parentDirectory));
+        Assert.True(File.Exists(testFilePath));
+        Assert.Equal("test", File.ReadAllText(testFilePath));
+    }
+
+    [Fact]
+    public async Task Restore_PreservesFileAttributes()
+    {
+        var testDirectoryPath = TestUtils.CreateTestFolder();
+        string testFilePath = Path.Combine(testDirectoryPath, "test.txt");
+        CreateFile(testFilePath, "test", FileAttributes.Temporary);
+        await MoveFileToRecycleBinAsync(testFilePath);
+
+        recycleBin.Restore(testFilePath);
+
+        Assert.True(File.Exists(testFilePath));
+        Assert.True(File.GetAttributes(testFilePath).HasFlag(FileAttributes.Temporary));
     }
 
     [Fact]
@@ -73,15 +113,14 @@ public class RecycleBinTest
         Assert.True(File.Exists(testFilePath));
     }
 
-
     [Fact]
     public async Task DeletePernamently()
     {
         var testDirectoryPath = TestUtils.CreateTestFolder();
         string prefix = Guid.NewGuid().ToString();
-        await CreateAndDeleteFileAsync(testDirectoryPath, prefix);
-        await CreateAndDeleteFileAsync(testDirectoryPath, prefix);
-        await CreateAndDeleteFileAsync(testDirectoryPath, prefix);
+        await CreateAndMoveFileWithPrefixToRecycleBinAsync(testDirectoryPath, prefix);
+        await CreateAndMoveFileWithPrefixToRecycleBinAsync(testDirectoryPath, prefix);
+        await CreateAndMoveFileWithPrefixToRecycleBinAsync(testDirectoryPath, prefix);
         var recycleBinEntries = FilterByPrefix(recycleBin.GetEntries(), prefix);
 
         recycleBin.DeletePernamently(recycleBinEntries[0]);
@@ -90,11 +129,64 @@ public class RecycleBinTest
         Assert.Equal(2, recycleBinEntries.Count);
     }
 
-    private async Task CreateAndDeleteFileAsync(string directoryPath, string fileNamePrefix)
+    [Fact]
+    public void Restore_File_Windows7()
     {
-        string testFilePath = Path.Combine(directoryPath, fileNamePrefix + "-" + Guid.NewGuid().ToString());
-        File.WriteAllText(testFilePath, "test");
-        var storageFile = await StorageFile.GetFileFromPathAsync(testFilePath);
+        PrepareWindows7Test();
+        string testFilePath = @"C:\WindowsRecycleBinTest\New Text Document.txt";
+        if (File.Exists(testFilePath)) { File.Delete(testFilePath); }
+
+        recycleBin.Restore(testFilePath);
+
+        Assert.True(File.Exists(testFilePath));
+        Assert.Equal("test", File.ReadAllText(testFilePath));
+    }
+
+    [Fact]
+    public void Restore_Directory_Windows7()
+    {
+        PrepareWindows7Test();
+        string testDirectoryPath = @"C:\WindowsRecycleBinTest\New folder";
+        if (Directory.Exists(testDirectoryPath)) { Directory.Delete(testDirectoryPath, true); }
+
+        recycleBin.Restore(testDirectoryPath);
+
+        Assert.True(Directory.Exists(testDirectoryPath));
+        Assert.True(File.Exists(Path.Combine(testDirectoryPath, "New Text Document.txt")));
+    }
+
+    private void PrepareWindows7Test()
+    {
+        string recycleBinPath = Path.Combine(@"C:\$Recycle.Bin", WindowsIdentity.GetCurrent().Owner!.ToString());
+        string windows7TestDataPath = Path.Combine(Environment.CurrentDirectory, "Resources", "Windows7");
+        Directory.EnumerateFiles(windows7TestDataPath, "*", SearchOption.AllDirectories).ToList().ForEach(path =>
+        {
+            string dstPath = Path.Combine(recycleBinPath, path.Substring(windows7TestDataPath.Length + 1));
+            Directory.CreateDirectory(Path.GetDirectoryName(dstPath)!);
+            File.Copy(path, dstPath, true);
+        });
+    }
+
+    private async Task CreateAndMoveFileWithPrefixToRecycleBinAsync(string directoryPath, string fileNamePrefix)
+    {
+        string filePath = Path.Combine(directoryPath, fileNamePrefix + "-" + Guid.NewGuid().ToString());
+        CreateFile(filePath, "test");
+        await MoveFileToRecycleBinAsync(filePath);
+    }
+
+    private void CreateFile(string filePath, string content, FileAttributes fileAttributes = FileAttributes.None)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
+        File.WriteAllText(filePath, content);
+        if (fileAttributes != FileAttributes.None)
+        {
+            File.SetAttributes(filePath, fileAttributes);
+        }
+    }
+
+    private async Task MoveFileToRecycleBinAsync(string filePath)
+    {
+        var storageFile = await StorageFile.GetFileFromPathAsync(filePath);
         await storageFile.DeleteAsync();
     }
 
