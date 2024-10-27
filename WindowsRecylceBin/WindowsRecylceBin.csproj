@@ -16,7 +16,7 @@
 
 	<PropertyGroup>
 		<PackageId>WindowsRecylceBin</PackageId>
-		<Version>1.1.0</Version>
+		<Version>1.1.1</Version>
 		<Description>.NET API to access the Windows recycle bin and restore files from it.</Description>
 		<PackageTags>Recycle Bin, Windows, Restore</PackageTags>
 		<Authors>sbaeumlisberger</Authors>
