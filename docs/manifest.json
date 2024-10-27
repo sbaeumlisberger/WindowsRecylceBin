@@ -1,0 +1,87 @@
+{
+  "source_base_path": "C:/Users/Sebastian/Workspace/git/WindowsRecylceBin/WindowsRecylceBin/docfx",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/WindowsRecylceBin.IRecycleBin.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/WindowsRecylceBin.IRecycleBin.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/WindowsRecylceBin.RecycleBin.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/WindowsRecylceBin.RecycleBin.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/WindowsRecylceBin.RecycleBinEntry.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/WindowsRecylceBin.RecycleBinEntry.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/WindowsRecylceBin.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/WindowsRecylceBin.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html"
+        },
+        ".json": {
+          "relative_path": "api/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

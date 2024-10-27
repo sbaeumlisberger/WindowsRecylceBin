@@ -24,12 +24,18 @@ public class RecycleBin : IRecycleBin
         }
     }
 
+    /// <summary>
+    /// Gets the recycle bin for the current user.
+    /// </summary>
     public static RecycleBin ForCurrentUser()
     {
         var sid = WindowsIdentity.GetCurrent().Owner ?? throw new Exception("Could not retrieve SID for current user.");
         return new RecycleBin(sid);
     }
 
+    /// <summary>
+    /// Gets the recycle bin for the specified SID.
+    /// </summary>
     public static RecycleBin For(SecurityIdentifier sid)
     {
         return new RecycleBin(sid);
