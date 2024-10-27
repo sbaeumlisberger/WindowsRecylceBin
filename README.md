@@ -9,3 +9,5 @@ Example:
 var recycleBin = RecycleBin.ForCurrentUser();
 recycleBin.Restore(@"C:\Users\Sample\Documents\ImportantDocument.txt");
 ```
+
+For more details visit the [API documentation](https://sbaeumlisberger.github.io/WindowsRecylceBin/api/WindowsRecylceBin.html)
