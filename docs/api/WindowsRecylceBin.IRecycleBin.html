@@ -6,7 +6,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta name="title" content="Interface IRecycleBin | Windows Recycle Bin ">
       
-      
+      <meta name="description" content="Provides access to the Windows recycle bin and allows to restore deleted files. To create an instance of this interface, use the static methods  or .">
       <link rel="icon" href="../favicon.ico">
       <link rel="stylesheet" href="../public/docfx.min.css">
       <link rel="stylesheet" href="../public/main.css">
@@ -85,7 +85,7 @@
 
 
   <h1 id="WindowsRecylceBin_IRecycleBin" data-uid="WindowsRecylceBin.IRecycleBin" class="text-break">
-Interface IRecycleBin  <a class="header-action link-secondary" title="View source" href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L6"><i class="bi bi-code-slash"></i></a>
+Interface IRecycleBin  <a class="header-action link-secondary" title="View source" href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L10"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -93,7 +93,9 @@ Interface IRecycleBin  <a class="header-action link-secondary" title="View sourc
   <dl><dt>Assembly</dt><dd>WindowsRecylceBin.dll</dd></dl>
   </div>
 
-  <div class="markdown summary"></div>
+  <div class="markdown summary"><p>Provides access to the Windows recycle bin and allows to restore deleted files.
+To create an instance of this interface, use the static methods <a class="xref" href="WindowsRecylceBin.RecycleBin.html#WindowsRecylceBin_RecycleBin_ForCurrentUser">RecycleBin.ForCurrentUser()</a> or <a class="xref" href="WindowsRecylceBin.RecycleBin.html#WindowsRecylceBin_RecycleBin_For_System_Security_Principal_SecurityIdentifier_">RecycleBin.For(SecurityIdentifier sid)</a>.</p>
+</div>
   <div class="markdown conceptual"></div>
 
   <div class="codewrapper">
@@ -120,7 +122,7 @@ Interface IRecycleBin  <a class="header-action link-secondary" title="View sourc
 
   <h3 id="WindowsRecylceBin_IRecycleBin_DeletePernamently_WindowsRecylceBin_RecycleBinEntry_" data-uid="WindowsRecylceBin.IRecycleBin.DeletePernamently(WindowsRecylceBin.RecycleBinEntry)">
   DeletePernamently(RecycleBinEntry)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L35"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L39"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Deletes the specified recycle bin entry pernamently.</p>
@@ -153,7 +155,7 @@ Interface IRecycleBin  <a class="header-action link-secondary" title="View sourc
 
   <h3 id="WindowsRecylceBin_IRecycleBin_Empty" data-uid="WindowsRecylceBin.IRecycleBin.Empty">
   Empty()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L40"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L44"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Empties the recycle bin. This will delete all entries pernamently.</p>
@@ -180,7 +182,7 @@ Interface IRecycleBin  <a class="header-action link-secondary" title="View sourc
 
   <h3 id="WindowsRecylceBin_IRecycleBin_EnumerateEntries" data-uid="WindowsRecylceBin.IRecycleBin.EnumerateEntries">
   EnumerateEntries()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L11"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L15"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Enumerates all entries in the recycle bin.</p>
@@ -212,7 +214,7 @@ Interface IRecycleBin  <a class="header-action link-secondary" title="View sourc
 
   <h3 id="WindowsRecylceBin_IRecycleBin_GetEntries" data-uid="WindowsRecylceBin.IRecycleBin.GetEntries">
   GetEntries()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L16"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L20"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Gets all entries in the recycle bin.</p>
@@ -244,7 +246,7 @@ Interface IRecycleBin  <a class="header-action link-secondary" title="View sourc
 
   <h3 id="WindowsRecylceBin_IRecycleBin_Restore_System_String_" data-uid="WindowsRecylceBin.IRecycleBin.Restore(System.String)">
   Restore(string)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L29"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L33"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Restores the specified file or directory. If more than one matching entry is found, the entry with the most recent deletion time is restored.</p>
@@ -283,7 +285,7 @@ Interface IRecycleBin  <a class="header-action link-secondary" title="View sourc
 
   <h3 id="WindowsRecylceBin_IRecycleBin_Restore_WindowsRecylceBin_RecycleBinEntry_" data-uid="WindowsRecylceBin.IRecycleBin.Restore(WindowsRecylceBin.RecycleBinEntry)">
   Restore(RecycleBinEntry)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L22"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L26"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Restores the specified recycle bin entry.</p>
@@ -316,7 +318,7 @@ Interface IRecycleBin  <a class="header-action link-secondary" title="View sourc
 </article>
 
         <div class="contribution d-print-none">
-          <a href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L6" class="edit-link">Edit this page</a>
+          <a href="https://github.com/sbaeumlisberger/WindowsRecylceBin/blob/main/WindowsRecylceBin/IRecycleBin.cs/#L10" class="edit-link">Edit this page</a>
         </div>
 
 

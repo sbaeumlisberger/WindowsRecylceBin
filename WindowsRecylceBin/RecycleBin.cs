@@ -7,6 +7,10 @@ using System.Text;
 
 namespace WindowsRecylceBin;
 
+/// <summary>
+/// Provides access to the Windows recycle bin and allows to restore deleted files.
+/// To create an instance of this class, use the static methods <see cref="RecycleBin.ForCurrentUser">RecycleBin.ForCurrentUser()</see> or <see cref="RecycleBin.For">RecycleBin.For(SecurityIdentifier sid)</see>.
+/// </summary>
 public class RecycleBin : IRecycleBin
 {
     private const string MetadataFilePrefix = "$I";

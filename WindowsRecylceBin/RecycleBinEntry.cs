@@ -2,6 +2,7 @@
 
 namespace WindowsRecylceBin;
 
+/// <summary>Represents an entry of the Windows recycle bin.</summary>
 /// <param name="OriginalFilePath">The original file path.</param>
 /// <param name="DeletedAt">The timestap when the file was deleted.</param>
 /// <param name="MetadataFilePath">The path of the metadata file in the recycle bin.</param>

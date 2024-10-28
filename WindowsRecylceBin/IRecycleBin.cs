@@ -3,6 +3,10 @@ using System.IO;
 
 namespace WindowsRecylceBin;
 
+/// <summary>
+/// Provides access to the Windows recycle bin and allows to restore deleted files.
+/// To create an instance of this interface, use the static methods <see cref="RecycleBin.ForCurrentUser">RecycleBin.ForCurrentUser()</see> or <see cref="RecycleBin.For">RecycleBin.For(SecurityIdentifier sid)</see>.
+/// </summary>
 public interface IRecycleBin
 {
     /// <summary>
