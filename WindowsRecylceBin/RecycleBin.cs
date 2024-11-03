@@ -47,7 +47,12 @@ public class RecycleBin : IRecycleBin
 
     public IEnumerable<RecycleBinEntry> EnumerateEntries()
     {
-        return Directory.EnumerateFiles(recycleBinPath, MetadataFilePrefix + "*").Select(ParseMetadataFile);
+        return Directory.EnumerateFileSystemEntries(recycleBinPath, BackupFilePrefix + "*").Select(backupFilePath =>
+        {
+            string metadataFileName = MetadataFilePrefix + Path.GetFileName(backupFilePath).Substring(BackupFilePrefix.Length);
+            string metadataFilePath = Path.Combine(recycleBinPath, metadataFileName);
+            return ParseRecycleBinEntry(backupFilePath, metadataFilePath);
+        });
     }
 
     public List<RecycleBinEntry> GetEntries()
@@ -87,7 +92,7 @@ public class RecycleBin : IRecycleBin
         }
     }
 
-    private RecycleBinEntry ParseMetadataFile(string metadataFilePath)
+    private RecycleBinEntry ParseRecycleBinEntry(string backupFilePath, string metadataFilePath)
     {
         /*
          * Metadata file structure:
@@ -138,9 +143,6 @@ public class RecycleBin : IRecycleBin
             orginalFilePath = Encoding.Unicode.GetString(metadataBytes, 24, metadataBytes.Length - 24).TrimEnd((char)0);
         }
 
-        string backupFileName = BackupFilePrefix + Path.GetFileName(metadataFilePath).Substring(MetadataFilePrefix.Length);
-        string backupFilePath = Path.Combine(recycleBinPath, backupFileName);
-
         return new RecycleBinEntry(orginalFilePath, deletedAt, metadataFilePath, backupFilePath);
     }
 
@@ -174,7 +176,7 @@ public class RecycleBin : IRecycleBin
 
     private static void MoveFileOrDirectory(string sourcePath, string destinationPath)
     {
-        if(Path.GetDirectoryName(destinationPath) is string parent)
+        if (Path.GetDirectoryName(destinationPath) is string parent)
         {
             Directory.CreateDirectory(parent);
         }
