@@ -63,6 +63,8 @@ public class RecycleBinTest
         File.WriteAllText(testFilePath, "conflict");
 
         Assert.Throws<IOException>(() => recycleBin.Restore(testFilePath));
+
+        Assert.Contains(recycleBin.GetEntries(), entry => entry.OriginalFilePath == testFilePath);
     }
 
     [Fact]
@@ -153,6 +155,20 @@ public class RecycleBinTest
 
         Assert.True(Directory.Exists(testDirectoryPath));
         Assert.True(File.Exists(Path.Combine(testDirectoryPath, "New Text Document.txt")));
+    }
+
+    [Fact(Skip = "Skipped because this test empties the entire recycle bin.")]
+    public async Task Empty()
+    {
+        var testDirectoryPath = TestUtils.CreateTestFolder();
+        string prefix = Guid.NewGuid().ToString();
+        await CreateAndMoveFileWithPrefixToRecycleBinAsync(testDirectoryPath, prefix);
+        await CreateAndMoveFileWithPrefixToRecycleBinAsync(testDirectoryPath, prefix);
+        await CreateAndMoveFileWithPrefixToRecycleBinAsync(testDirectoryPath, prefix);
+
+        recycleBin.Empty();
+
+        Assert.Empty(recycleBin.GetEntries());
     }
 
     private void PrepareWindows7Test()
