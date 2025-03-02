@@ -16,13 +16,16 @@ public class RecycleBin : IRecycleBin
     private const string MetadataFilePrefix = "$I";
     private const string BackupFilePrefix = "$R";
 
-    private readonly string recycleBinPath;
+    private readonly string[] recycleBinPaths;
 
     private RecycleBin(SecurityIdentifier sid)
     {
-        recycleBinPath = Path.Combine(@"C:\$Recycle.Bin", sid.ToString());
+        recycleBinPaths = DriveInfo.GetDrives()
+            .Select(drive => Path.Combine(drive.Name, "$Recycle.Bin", sid.ToString()))
+            .Where(Directory.Exists)
+            .ToArray();
 
-        if (!Directory.Exists(recycleBinPath))
+        if (recycleBinPaths.Length == 0)
         {
             throw new IOException($"""Recycle bin for SID "{sid}" does not exist.""");
         }
@@ -47,12 +50,13 @@ public class RecycleBin : IRecycleBin
 
     public IEnumerable<RecycleBinEntry> EnumerateEntries()
     {
-        return Directory.EnumerateFileSystemEntries(recycleBinPath, BackupFilePrefix + "*").Select(backupFilePath =>
+        return recycleBinPaths.SelectMany(recycleBinPath =>
+            Directory.EnumerateFileSystemEntries(recycleBinPath, BackupFilePrefix + "*").Select(backupFilePath =>
         {
             string metadataFileName = MetadataFilePrefix + Path.GetFileName(backupFilePath).Substring(BackupFilePrefix.Length);
             string metadataFilePath = Path.Combine(recycleBinPath, metadataFileName);
             return ParseRecycleBinEntry(backupFilePath, metadataFilePath);
-        });
+        }));
     }
 
     public List<RecycleBinEntry> GetEntries()
@@ -86,7 +90,7 @@ public class RecycleBin : IRecycleBin
 
     public void Empty()
     {
-        foreach (var path in Directory.EnumerateFileSystemEntries(recycleBinPath))
+        foreach (var path in recycleBinPaths.SelectMany(Directory.EnumerateFileSystemEntries).ToList())
         {
             DeleteFileOrDirectory(path);
         }
@@ -148,7 +152,7 @@ public class RecycleBin : IRecycleBin
 
     private void ValidateRecycleBinEntryParam(string paramName, RecycleBinEntry entry)
     {
-        if (!entry.MetadataFilePath.StartsWith(recycleBinPath))
+        if (!recycleBinPaths.Any(entry.MetadataFilePath.StartsWith))
         {
             throw new ArgumentOutOfRangeException(paramName, "Invalid recycle bin entry");
         }
