@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Principal;
@@ -11,10 +12,16 @@ namespace WindowsRecylceBin;
 /// Provides access to the Windows recycle bin and allows to restore deleted files.
 /// To create an instance of this class, use the static methods <see cref="RecycleBin.ForCurrentUser">RecycleBin.ForCurrentUser()</see> or <see cref="RecycleBin.For">RecycleBin.For(SecurityIdentifier sid)</see>.
 /// </summary>
+/// <remarks>All parsing errors are ignored. Use the <see cref="ParsingErrorOccured"/> event to be notified when an error occurs.</remarks>
 public class RecycleBin : IRecycleBin
 {
     private const string MetadataFilePrefix = "$I";
     private const string BackupFilePrefix = "$R";
+
+    /// <summary>
+    /// Raised when a recycle bin entry could not be parsed.
+    /// </summary>
+    public event EventHandler<RecycleBinParsingErrorOccuredEventArgs>? ParsingErrorOccured;
 
     private readonly string[] recycleBinPaths;
 
@@ -55,8 +62,16 @@ public class RecycleBin : IRecycleBin
         {
             string metadataFileName = MetadataFilePrefix + Path.GetFileName(backupFilePath).Substring(BackupFilePrefix.Length);
             string metadataFilePath = Path.Combine(recycleBinPath, metadataFileName);
-            return ParseRecycleBinEntry(backupFilePath, metadataFilePath);
-        }));
+            try
+            {
+                return ParseRecycleBinEntry(backupFilePath, metadataFilePath);
+            }
+            catch (Exception ex)
+            {
+                ParsingErrorOccured?.Invoke(this, new RecycleBinParsingErrorOccuredEventArgs(metadataFilePath, ex));
+                return null;
+            }
+        }).OfType<RecycleBinEntry>());
     }
 
     public List<RecycleBinEntry> GetEntries()
@@ -131,7 +146,7 @@ public class RecycleBin : IRecycleBin
             return filePathLengthInBytes == 544 - 28;
         }
 
-        var metadataBytes = ReadFile(metadataFilePath);
+        byte[] metadataBytes = ReadFile(metadataFilePath);
 
         DateTime deletedAt = DateTime.FromFileTime(BitConverter.ToInt64(metadataBytes, 16));
 

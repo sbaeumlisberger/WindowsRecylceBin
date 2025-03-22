@@ -7,6 +7,9 @@ namespace WindowsRecycleBin.Test;
 
 public class RecycleBinTest
 {
+    private const string MetadataFilePrefix = "$I";
+    private const string BackupFilePrefix = "$R";
+
     private readonly RecycleBin recycleBin = RecycleBin.ForCurrentUser();
 
     [Fact]
@@ -18,9 +21,40 @@ public class RecycleBinTest
         await CreateAndMoveFileWithPrefixToRecycleBinAsync(testDirectoryPath, prefix);
         await CreateAndMoveFileWithPrefixToRecycleBinAsync(testDirectoryPath, prefix);
 
-        var recycleBinEntries = FilterByPrefix(recycleBin.GetEntries(), prefix);
+        var recycleBinEntries = recycleBin.GetEntries();
 
-        Assert.Equal(3, recycleBinEntries.Count);
+        Assert.Equal(3, FilterByPrefix(recycleBinEntries, prefix).Count);
+    }
+
+    [Fact]
+    public async Task ParsingErrorsAreIgnoredAndReported()
+    {
+        // setup
+        var testDirectoryPath = TestUtils.CreateTestFolder();
+        string prefix = Guid.NewGuid().ToString();
+        await CreateAndMoveFileWithPrefixToRecycleBinAsync(testDirectoryPath, prefix);
+        await CreateAndMoveFileWithPrefixToRecycleBinAsync(testDirectoryPath, prefix);
+        await CreateAndMoveFileWithPrefixToRecycleBinAsync(testDirectoryPath, prefix);
+
+        string recycleBinPath = Path.Combine(Path.GetPathRoot(testDirectoryPath)!, "$Recycle.Bin", WindowsIdentity.GetCurrent().Owner!.Value);
+        string invalidEntryBackupFile = Path.Combine(recycleBinPath, BackupFilePrefix + "invalid");
+        File.WriteAllText(invalidEntryBackupFile, "test");
+        string invalidEntryMetadataFile = Path.Combine(recycleBinPath, MetadataFilePrefix + "invalid");
+        File.WriteAllText(invalidEntryMetadataFile, "invalid");
+
+        List<RecycleBinParsingErrorOccuredEventArgs> errors = new List<RecycleBinParsingErrorOccuredEventArgs>();
+        recycleBin.ParsingErrorOccured += (s, e) => errors.Add(e);
+
+        // act
+        var recycleBinEntries = recycleBin.GetEntries();
+
+        // assert
+        Assert.Equal(3, FilterByPrefix(recycleBinEntries, prefix).Count);
+        Assert.Contains(errors, e => e.MetadataFilePath == invalidEntryMetadataFile);
+
+        // cleanup
+        File.Delete(invalidEntryBackupFile);
+        File.Delete(invalidEntryMetadataFile);
     }
 
     [Fact]
@@ -60,11 +94,27 @@ public class RecycleBinTest
         string testFilePath = Path.Combine(testDirectoryPath, "test.txt");
         CreateFile(testFilePath, "test");
         await MoveFileToRecycleBinAsync(testFilePath);
-        File.WriteAllText(testFilePath, "conflict");
+        CreateFile(testFilePath, "conflict");
 
         Assert.Throws<IOException>(() => recycleBin.Restore(testFilePath));
 
         Assert.Contains(recycleBin.GetEntries(), entry => entry.OriginalFilePath == testFilePath);
+    }
+
+    [Fact]
+    public async Task Restore_PrefersLastDeletedFile()
+    {
+        var testDirectoryPath = TestUtils.CreateTestFolder();
+        string testFilePath = Path.Combine(testDirectoryPath, "test.txt");
+        CreateFile(testFilePath, "firstDeleted");
+        await MoveFileToRecycleBinAsync(testFilePath);
+        CreateFile(testFilePath, "lastDeleted");
+        await MoveFileToRecycleBinAsync(testFilePath);
+
+        recycleBin.Restore(testFilePath);
+
+        Assert.True(File.Exists(testFilePath));
+        Assert.Equal("lastDeleted", File.ReadAllText(testFilePath));
     }
 
     [Fact]
