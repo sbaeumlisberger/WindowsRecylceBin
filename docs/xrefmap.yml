@@ -171,6 +171,12 @@ references:
   isSpec: "True"
   fullName: WindowsRecylceBin.RecycleBin.GetEntries
   nameWithType: RecycleBin.GetEntries
+- uid: WindowsRecylceBin.RecycleBin.ParsingErrorOccured
+  name: ParsingErrorOccured
+  href: api/WindowsRecylceBin.RecycleBin.html#WindowsRecylceBin_RecycleBin_ParsingErrorOccured
+  commentId: E:WindowsRecylceBin.RecycleBin.ParsingErrorOccured
+  fullName: WindowsRecylceBin.RecycleBin.ParsingErrorOccured
+  nameWithType: RecycleBin.ParsingErrorOccured
 - uid: WindowsRecylceBin.RecycleBin.Restore(System.String)
   name: Restore(string)
   href: api/WindowsRecylceBin.RecycleBin.html#WindowsRecylceBin_RecycleBin_Restore_System_String_
@@ -199,25 +205,6 @@ references:
   commentId: T:WindowsRecylceBin.RecycleBinEntry
   fullName: WindowsRecylceBin.RecycleBinEntry
   nameWithType: RecycleBinEntry
-- uid: WindowsRecylceBin.RecycleBinEntry.#ctor(System.String,System.DateTime,System.String,System.String)
-  name: RecycleBinEntry(string, DateTime, string, string)
-  href: api/WindowsRecylceBin.RecycleBinEntry.html#WindowsRecylceBin_RecycleBinEntry__ctor_System_String_System_DateTime_System_String_System_String_
-  commentId: M:WindowsRecylceBin.RecycleBinEntry.#ctor(System.String,System.DateTime,System.String,System.String)
-  name.vb: New(String, Date, String, String)
-  fullName: WindowsRecylceBin.RecycleBinEntry.RecycleBinEntry(string, System.DateTime, string, string)
-  fullName.vb: WindowsRecylceBin.RecycleBinEntry.New(String, Date, String, String)
-  nameWithType: RecycleBinEntry.RecycleBinEntry(string, DateTime, string, string)
-  nameWithType.vb: RecycleBinEntry.New(String, Date, String, String)
-- uid: WindowsRecylceBin.RecycleBinEntry.#ctor*
-  name: RecycleBinEntry
-  href: api/WindowsRecylceBin.RecycleBinEntry.html#WindowsRecylceBin_RecycleBinEntry__ctor_
-  commentId: Overload:WindowsRecylceBin.RecycleBinEntry.#ctor
-  isSpec: "True"
-  name.vb: New
-  fullName: WindowsRecylceBin.RecycleBinEntry.RecycleBinEntry
-  fullName.vb: WindowsRecylceBin.RecycleBinEntry.New
-  nameWithType: RecycleBinEntry.RecycleBinEntry
-  nameWithType.vb: RecycleBinEntry.New
 - uid: WindowsRecylceBin.RecycleBinEntry.BackupFilePath
   name: BackupFilePath
   href: api/WindowsRecylceBin.RecycleBinEntry.html#WindowsRecylceBin_RecycleBinEntry_BackupFilePath
@@ -270,3 +257,35 @@ references:
   isSpec: "True"
   fullName: WindowsRecylceBin.RecycleBinEntry.OriginalFilePath
   nameWithType: RecycleBinEntry.OriginalFilePath
+- uid: WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs
+  name: RecycleBinParsingErrorOccuredEventArgs
+  href: api/WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.html
+  commentId: T:WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs
+  fullName: WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs
+  nameWithType: RecycleBinParsingErrorOccuredEventArgs
+- uid: WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.Exception
+  name: Exception
+  href: api/WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.html#WindowsRecylceBin_RecycleBinParsingErrorOccuredEventArgs_Exception
+  commentId: P:WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.Exception
+  fullName: WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.Exception
+  nameWithType: RecycleBinParsingErrorOccuredEventArgs.Exception
+- uid: WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.Exception*
+  name: Exception
+  href: api/WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.html#WindowsRecylceBin_RecycleBinParsingErrorOccuredEventArgs_Exception_
+  commentId: Overload:WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.Exception
+  isSpec: "True"
+  fullName: WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.Exception
+  nameWithType: RecycleBinParsingErrorOccuredEventArgs.Exception
+- uid: WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.MetadataFilePath
+  name: MetadataFilePath
+  href: api/WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.html#WindowsRecylceBin_RecycleBinParsingErrorOccuredEventArgs_MetadataFilePath
+  commentId: P:WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.MetadataFilePath
+  fullName: WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.MetadataFilePath
+  nameWithType: RecycleBinParsingErrorOccuredEventArgs.MetadataFilePath
+- uid: WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.MetadataFilePath*
+  name: MetadataFilePath
+  href: api/WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.html#WindowsRecylceBin_RecycleBinParsingErrorOccuredEventArgs_MetadataFilePath_
+  commentId: Overload:WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.MetadataFilePath
+  isSpec: "True"
+  fullName: WindowsRecylceBin.RecycleBinParsingErrorOccuredEventArgs.MetadataFilePath
+  nameWithType: RecycleBinParsingErrorOccuredEventArgs.MetadataFilePath
